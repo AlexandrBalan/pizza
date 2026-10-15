@@ -22,6 +22,26 @@ document.getElementById("pizza-form").onsubmit = () => {
         isValid = false;
     }
     
+    let methodSelected = false;
+    let methodButtons = document.getElementsByName("method");
+    for (let i = 0; i < methodButtons.length; i++) {
+        if (methodButtons[i].checked) {
+            methodSelected = true;
+        }
+    }
+
+    if (!methodSelected) {
+        document.getElementById("err-method").style.display = "block";
+        isValid = false;
+    }
+
+
+    let size = document.getElementById("size").value;
+    if (size === "none") {
+        document.getElementById("err-size").style.display = "block";
+        isValid = false;
+    }
+
     return isValid;
 };
 
