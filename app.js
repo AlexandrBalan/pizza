@@ -63,6 +63,16 @@ app.get('/menu-page', (req, res) => {
     res.sendFile(`${import.meta.dirname}/views/menu.html`);
 });
 
+
+//add a admin route to display a contact view page
+app.get('/admin', (req, res) => {
+    // res.send('Welcome to Poppa\'s Pizza');
+    res.send(orders);
+});
+
+
+
+
 //start the server on the designated port
 app.listen(PORT, () => {
     console.log(`Server is running at http://localhost:${PORT}`);
