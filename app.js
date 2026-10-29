@@ -18,24 +18,27 @@ app.use(express.static('public'));
 //access the for data through req.body
 app.use(express.urlencoded({extended: true}));
 
+//set view engine to EJS
+app.set('view engine', 'ejs');
+
 //defining a default route ("/")
 app.get('/', (req, res) => {
     // res.send('Welcome to Poppa\'s Pizza');
-    res.sendFile(`${import.meta.dirname}/views/home.html`);
+    res.render(`home`);
 });
 
 
 //add a contact route to display a contact view page
 app.get('/contact-us', (req, res) => {
     // res.send('Welcome to Poppa\'s Pizza');
-    res.sendFile(`${import.meta.dirname}/views/contact.html`);
+    res.render(`contact`);
 });
 
 //add a confirmation order route to display a contact view page
-app.get('/confirm-order', (req, res) => {
-    // res.send('Welcome to Poppa\'s Pizza');
-    res.sendFile(`${import.meta.dirname}/views/confirm.html`);
-});
+// app.get('/confirm-order', (req, res) => {
+//     // res.send('Welcome to Poppa\'s Pizza');
+//     res.render(`confirm`);
+// });
 
 //add a route to process a pizza order
 app.post('/submit-order', (req, res) => {
@@ -53,7 +56,7 @@ app.post('/submit-order', (req, res) => {
     console.log(orders);
 
     //display the confirmation page
-    res.sendFile(`${import.meta.dirname}/views/confirm.html`);
+    res.render(`confirm`, { order });
 });
 
 
@@ -67,7 +70,7 @@ app.get('/menu-page', (req, res) => {
 //add a admin route to display a contact view page
 app.get('/admin', (req, res) => {
     // res.send('Welcome to Poppa\'s Pizza');
-    res.send(orders);
+    res.render("admin", { orders });
 });
 
 
