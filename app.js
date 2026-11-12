@@ -37,17 +37,17 @@ app.use(express.urlencoded({extended: true}));
 app.set('view engine', 'ejs');
 
 //create a route to test the database
-app.get('/db-test', async(req, res) => {
-    try {
-        const orders = await pool.query('SELECT * FROM orders');
-        res.send(orders[0]);
-    }
+// app.get('/db-test', async(req, res) => {
+//     try {
+//         const [orders] = await pool.query('SELECT * FROM orders');
+//         res.send(orders);
+//     }
 
-    catch(err) {
-        console.error('Database error: ', err);
-        res.status(500).send('Database error occurred');
-    }
-});
+//     catch(err) {
+//         console.error('Database error: ', err);
+//         res.status(500).send('Database error occurred');
+//     }
+// });
 
 //defining a default route ("/")
 app.get('/', (req, res) => {
@@ -90,6 +90,10 @@ app.post('/submit-order', async(req, res) => {
     //execute the query
     const [result] = await pool.execute(sql, params);
 
+    order.id = result.insertId;
+
+    console.log("A new row was inserted with ID" + order.id);
+
     //display the confirmation page
     res.render(`confirm`, { order });
 });
@@ -105,9 +109,9 @@ app.get('/menu-page', (req, res) => {
 //add a admin route to display a contact view page
 app.get('/admin', async(req, res) => {
     try {
-        const orders = await pool.query('SELECT * FROM orders');
-        console.log(orders[0]);
-        res.render("admin", { orders:orders[0] })
+        const [orders] = await pool.query('SELECT * FROM orders ORDER BY timestamp DESC');
+        console.log(orders);
+        res.render("admin", { orders })
     }
 
     catch(err) {
