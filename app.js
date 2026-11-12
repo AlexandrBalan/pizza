@@ -73,6 +73,11 @@ app.post('/submit-order', async(req, res) => {
 
     const order = req.body;
     console.log(order);
+
+
+
+    order.toppings = Array.isArray(order.toppings) ?
+        order.toppings.join(", ") : "";
     //define an sql query to insert new order
     const sql = `INSERT INTO orders (fname, lname, email, size, method, toppings, comment) VALUES(?, ?, ?, ?, ?, ?, ?)`;
 
