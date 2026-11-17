@@ -5,6 +5,9 @@ import mysql2 from 'mysql2';
 // import .env
 import dotenv from 'dotenv';
 dotenv.config();
+
+
+import session from 'express-session';
 //create a connection "pool" 
 const pool = mysql2.createPool ({
     host: process.env.DB_HOST,
@@ -18,6 +21,22 @@ const pool = mysql2.createPool ({
 
 //create an instance of an express application
 const app = express();
+
+app.use(session ({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: { maxAge: 1000 * 60 * 60}
+}));
+
+function requireLogin(req, res, next) {
+    if(req.session.loggedIn) {
+        next();
+    }
+    else {
+        res.redirect('/login');
+    }
+}
 
 //define a port number for our server to listen on
 const PORT = 3000;
@@ -53,6 +72,36 @@ app.set('view engine', 'ejs');
 app.get('/', (req, res) => {
     // res.send('Welcome to Poppa\'s Pizza');
     res.render(`home`);
+});
+
+app.get('/login', (req, res) => {
+    // res.send('Welcome to Poppa\'s Pizza');
+    res.render(`login`, {error: null});
+});
+
+app.post('/login', (req, res) => {
+    const username = req.body.username;
+    const password = req.body.password;
+
+
+    if(username === process.env.ADMIN_USER &&
+        password === process.env.ADMIN_PASSWORD) {
+            req.session.loggedIn = true;
+
+
+            res.redirect('/admin');
+        }
+
+
+        else {
+            res.render('login', { error: 'Invalid username or password.'});
+        }
+});
+
+app.get('/logout', (req, res) => {
+    req.session.destroy(() => {
+        res.redirect('/login');
+    });
 });
 
 
@@ -112,7 +161,7 @@ app.get('/menu-page', (req, res) => {
 
 
 //add a admin route to display a contact view page
-app.get('/admin', async(req, res) => {
+app.get('/admin', requireLogin, async(req, res) => {
     try {
         const [orders] = await pool.query('SELECT * FROM orders ORDER BY timestamp DESC');
         console.log(orders);
